@@ -1,0 +1,637 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mill_relining_robot">
+
+  <!-- ===================== XACRO PROPERTIES ===================== -->
+
+  <!--
+  Feet to Beam Height: 1749mm
+  Beam Vertical Thickness: 607mm
+  Beam Width: 1064mm
+  Platform Width: 4180mm
+  Turntable Radius: 680mm
+  Vert Link: 59 Deg
+  Vert Height: 655mm
+  Boom Width 550x550mm
+  Boom Length: 3000mm
+
+  -->
+  
+  <!-- Base dimensions -->
+  <xacro:property name="base_length" value="7.0" />
+  <xacro:property name="base_width" value="4.0" />
+  <xacro:property name="base_height" value="1.0" />
+  <xacro:property name="base_mass" value="20" />
+  
+  <!-- Leg properties -->
+  <xacro:property name="leg_width" value="0.3" />    <!-- leg box width (X direction) -->
+  <xacro:property name="leg_depth" value="0.3" />    <!-- leg box depth (Y direction) -->
+  <xacro:property name="leg_height" value="0.8" />    <!-- leg box height (Z direction) -->
+  <xacro:property name="leg_mass" value="2.0" />
+  
+  <!-- Leg positioning - flush with base corners -->
+  <!-- These position the leg centers at the base corners -->
+  <xacro:property name="leg_offset_x" value="${(base_length/2) - (leg_width)}" />   <!-- X offset from base center -->
+  <xacro:property name="leg_offset_y" value="${(base_width/2) - (leg_depth)}" />    <!-- Y offset from base center -->
+  
+  <!-- Horizontal beam properties -->
+  <xacro:property name="beam_length" value="12.5" />
+  <xacro:property name="beam_width" value="1.0" />
+  <xacro:property name="beam_height" value="0.6" />
+  <xacro:property name="beam_mass" value="15" />
+  <xacro:property name="beam_slide_range" value="5.5" />
+  <xacro:property name="beam_slide_velocity" value="0.5" />
+  <xacro:property name="beam_slide_effort" value="200" />
+
+  <!-- Turntable properties -->
+  <xacro:property name="turntable_radius" value="0.49" />
+  <xacro:property name="turntable_height" value="0.08" />
+  <xacro:property name="turntable_mass" value="5" />
+  <xacro:property name="turntable_effort" value="100" />
+  <xacro:property name="turntable_velocity" value="2" />
+
+  <!-- Vertical link properties -->
+  <xacro:property name="vertical_width" value="0.15" />
+  <xacro:property name="vertical_depth" value="0.9" />
+  <xacro:property name="vertical_height" value="1.5" />
+  <xacro:property name="vertical_mass" value="8" />
+
+  <!-- Boom outer properties -->
+  <xacro:property name="boom_outer_width" value="0.55" />
+  <xacro:property name="boom_outer_depth" value="0.55" />
+  <xacro:property name="boom_outer_height" value="3.0" />
+  <xacro:property name="boom_outer_mass" value="5" />
+  <xacro:property name="boompitch_effort" value="80" />
+  <xacro:property name="boompitch_velocity" value="2" />
+  <xacro:property name="boompitch_range" value="1.57" />
+
+  <!-- Boom inner extension properties -->
+  <xacro:property name="boom_inner_width" value="0.5" />
+  <xacro:property name="boom_inner_depth" value="0.5" />
+  <xacro:property name="boom_inner_length" value="3.0" />
+  <xacro:property name="boom_inner_mass" value="3" />
+  <xacro:property name="boom_inner_range" value="2.7" />
+  <xacro:property name="boom_inner_velocity" value="1" />
+  <xacro:property name="boom_inner_effort" value="50" />
+
+  <!-- Grapple slew -->
+  <xacro:property name="grappleslew_radius" value="${boom_inner_width/2}" />
+  <xacro:property name="grappleslew_length" value="${boom_inner_width}" />
+  <xacro:property name="grappleslew_mass" value="1.5" />
+  <xacro:property name="grappleslew_effort" value="30" />
+  <xacro:property name="grappleslew_velocity" value="3" />
+  
+    <!-- Grapple roll properties -->
+  <xacro:property name="grappleroll_radius" value="0.2" />
+  <xacro:property name="grappleroll_length" value="0.5" />
+  <xacro:property name="grappleroll_mass" value="1" />
+  <xacro:property name="grappleroll_effort" value="20" />
+  <xacro:property name="grappleroll_velocity" value="3" />
+  <xacro:property name="grappleroll_range" value="1.57" />
+
+  <!-- Grapple pitch properties -->
+  <xacro:property name="grapplepitch_radius" value="0.125" />
+  <xacro:property name="grapplepitch_length" value="0.5" />
+  <xacro:property name="grapplepitch_mass" value="0.5" />
+  <xacro:property name="grapplepitch_effort" value="15" />
+  <xacro:property name="grapplepitch_velocity" value="4" />
+
+  <!-- Grapple properties -->
+  <xacro:property name="grapple_length" value="0.25" />
+  <xacro:property name="grapple_width" value="0.4" />
+  <xacro:property name="grapple_height" value="0.4" />
+  <xacro:property name="grapple_mass" value="2.0" />
+  
+  
+  <!-- Colors -->
+  <xacro:property name="gray_color" value="0.5 0.5 0.5 1" />
+  <xacro:property name="blue_color" value="0 0 1 1" />
+  <xacro:property name="red_color" value="1 0 0 1" />
+  <xacro:property name="green_color" value="0 1 0 1" />
+  <xacro:property name="yellow_color" value="1 1 0 1" />
+  <xacro:property name="purple_color" value="1 0 1 1" />
+  <xacro:property name="orange_color" value="1 0.5 0 1" />
+  <xacro:property name="white_color" value="1 1 1 1" />
+  <xacro:property name="black_color" value="0.1 0.1 0.1 1" />
+  <xacro:property name="dark_gray_color" value="0.3 0.3 0.3 1" />
+
+  <!-- ===================== XACRO MACROS ===================== -->
+  
+  <!-- Inertia macros -->
+  <xacro:macro name="box_inertia" params="m x y z">
+    <inertia ixx="${m*(y*y+z*z)/12}" ixy="0" ixz="0"
+             iyy="${m*(x*x+z*z)/12}" iyz="0"
+             izz="${m*(x*x+y*y)/12}" />
+  </xacro:macro>
+  
+  <xacro:macro name="cylinder_inertia" params="m r h">
+    <inertia ixx="${m*(3*r*r+h*h)/12}" ixy="0" ixz="0"
+             iyy="${m*(3*r*r+h*h)/12}" iyz="0"
+             izz="${m*r*r/2}" />
+  </xacro:macro>
+  
+  <!-- Leg macro for reusability - PROPERLY ALIGNED WITH GROUND -->
+  <xacro:macro name="leg" params="name x y">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <!-- Position leg so it sits on ground (z=0) and extends up to base -->
+      <origin xyz="${x} ${y} ${leg_height/2}" rpy="0 0 0"/>
+    </joint>
+    
+    <link name="${name}">
+      <visual>
+        <!-- Leg centered at joint origin -->
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${leg_width} ${leg_depth} ${leg_height}"/>
+        </geometry>
+        <xacro:material_black/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${leg_width} ${leg_depth} ${leg_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${leg_mass}"/>
+        <xacro:box_inertia m="${leg_mass}" x="${leg_width}" y="${leg_depth}" z="${leg_height}"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+  
+  <!-- Material definitions -->
+  <xacro:macro name="material_gray">
+    <material name="gray">
+      <color rgba="${gray_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_blue">
+    <material name="blue">
+      <color rgba="${blue_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_red">
+    <material name="red">
+      <color rgba="${red_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_green">
+    <material name="green">
+      <color rgba="${green_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_yellow">
+    <material name="yellow">
+      <color rgba="${yellow_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_purple">
+    <material name="purple">
+      <color rgba="${purple_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_orange">
+    <material name="orange">
+      <color rgba="${orange_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_white">
+    <material name="white">
+      <color rgba="${white_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_black">
+    <material name="black">
+      <color rgba="${black_color}"/>
+    </material>
+  </xacro:macro>
+  
+  <xacro:macro name="material_dark_gray">
+    <material name="dark_gray">
+      <color rgba="${dark_gray_color}"/>
+    </material>
+  </xacro:macro>
+
+  <!-- ===================== ROBOT LINKS AND JOINTS ===================== -->
+  
+  <!-- Base Link (coordinate origin at ground level, base frame elevated by legs) -->
+  <link name="base_link">
+    <visual>
+      <!-- Base frame sits on top of legs -->
+      <origin xyz="0 0 ${leg_height + base_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+      <xacro:material_black />
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${leg_height + base_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${leg_height + base_height/2}" rpy="0 0 0"/>
+      <mass value="${base_mass}"/>
+      <xacro:box_inertia m="${base_mass}" x="${base_length}" y="${base_width}" z="${base_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Add 4 legs using the macro - positioned at base corners -->
+  <xacro:leg name="leg_front_left" x="${leg_offset_x}" y="${leg_offset_y}" />
+  <xacro:leg name="leg_front_right" x="${leg_offset_x}" y="-${leg_offset_y}" />
+  <xacro:leg name="leg_back_left" x="-${leg_offset_x}" y="${leg_offset_y}" />
+  <xacro:leg name="leg_back_right" x="-${leg_offset_x}" y="-${leg_offset_y}" />
+
+  <!-- Beam Joint - Prismatic (sliding beam) -->
+  <joint name="beam_joint" type="prismatic">
+    <parent link="base_link"/>
+    <child link="horizontal_beam"/>
+    <!-- Beam sits inline with top of base frame -->
+    <origin xyz="0 0 ${leg_height + base_height - (beam_height/2)}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="${beam_slide_range}" effort="${beam_slide_effort}" velocity="${beam_slide_velocity}"/>
+  </joint>
+
+  <!-- Horizontal Beam -->
+  <link name="horizontal_beam">
+    <visual>
+      <origin xyz="1.3 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${beam_length} ${beam_width} ${beam_height}"/>
+      </geometry>
+      <xacro:material_blue />
+    </visual>
+    <collision>
+      <origin xyz="1.3 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${beam_length} ${beam_width} ${beam_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="1.3 0 0" rpy="0 0 0"/>
+      <mass value="${beam_mass}"/>
+      <xacro:box_inertia m="${beam_mass}" x="${beam_length}" y="${beam_width}" z="${beam_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Turntable - Revolute joint (the cylinder itself rotates) -->
+  <joint name="turn_table" type="revolute">
+    <parent link="horizontal_beam"/>
+    <child link="turntable_cylinder"/>
+    <origin xyz="${(beam_length/2 + 0.85)} 0 ${beam_height/2}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14159" upper="3.14159" effort="${turntable_effort}" velocity="${turntable_velocity}"/>
+  </joint>
+
+  <!-- Turntable Cylinder (this rotates) -->
+  <link name="turntable_cylinder">
+    <visual>
+      <origin xyz="0 0 ${turntable_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${turntable_radius}" length="${turntable_height}"/>
+      </geometry>
+      <xacro:material_gray />
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${turntable_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${turntable_radius}" length="${turntable_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${turntable_height/2}" rpy="0 0 0"/>
+      <mass value="${turntable_mass}"/>
+      <xacro:cylinder_inertia m="${turntable_mass}" r="${turntable_radius}" h="${turntable_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Vertical Link Mount - Fixed to top of turntable cylinder -->
+  <joint name="vertical_mount" type="fixed">
+    <parent link="turntable_cylinder"/>
+    <child link="vertical_link"/>
+    <origin xyz="${turntable_radius/2} 0 ${turntable_height}" rpy="0 -0.54 0"/>
+  </joint>
+
+  <!-- Vertical Link (static relative to turntable) -->
+  <link name="vertical_link">
+    <visual>
+      <origin xyz="0 0 ${vertical_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${vertical_width} ${vertical_depth} ${vertical_height}"/>
+      </geometry>
+      <xacro:material_red />
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${vertical_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${vertical_width} ${vertical_depth} ${vertical_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${vertical_height/2}" rpy="0 0 0"/>
+      <mass value="${vertical_mass}"/>
+      <xacro:box_inertia m="${vertical_mass}" x="${vertical_width}" y="${vertical_depth}" z="${vertical_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Boom Pitch - Revolute at top of vertical link -->
+  <joint name="boom_pitch" type="revolute">
+    <parent link="vertical_link"/>
+    <child link="boom_outer_link"/>
+    <origin xyz="0 0 ${vertical_height}" rpy="0 0.54 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-${boompitch_range}" upper="${boompitch_range}" effort="${boompitch_effort}" velocity="${boompitch_velocity}"/>
+  </joint>
+
+  <!-- Boom outer (before prismatic) -->
+  <link name="boom_outer_link">
+    <visual>
+      <origin xyz="${boom_outer_height/2} 0 0" rpy="0 1.57 0"/>
+      <geometry>
+        <box size="${boom_outer_depth} ${boom_outer_width} ${boom_outer_height}"/>
+      </geometry>
+      <xacro:material_green />
+    </visual>
+    <collision>
+      <origin xyz="${boom_outer_height/2} 0 0" rpy="0 1.57 0"/>
+      <geometry>
+        <box size="${boom_outer_depth} ${boom_outer_width} ${boom_outer_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="${boom_outer_height/2} 0 0" rpy="0 1.57 0"/>
+      <mass value="${boom_outer_mass}"/>
+      <xacro:box_inertia m="${boom_outer_mass}" x="${boom_outer_depth}" y="${boom_outer_width}" z="${boom_outer_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Boom inner - Prismatic -->
+  <joint name="boom_inner_joint" type="prismatic">
+    <parent link="boom_outer_link"/>
+    <child link="boom_inner"/>
+    <origin xyz="0.1 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="${boom_inner_range}" effort="${boom_inner_effort}" velocity="${boom_inner_velocity}"/>
+  </joint>
+
+  <!-- Boom Inner (prismatic part) -->
+  <link name="boom_inner">
+    <visual>
+      <origin xyz="${boom_inner_length/2} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${boom_inner_length} ${boom_inner_width} ${boom_inner_depth}"/>
+      </geometry>
+      <xacro:material_yellow />
+    </visual>
+    <collision>
+      <origin xyz="${boom_inner_length/2} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${boom_inner_length} ${boom_inner_width} ${boom_inner_depth}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="${boom_inner_length/2} 0 0" rpy="0 0 0"/>
+      <mass value="${boom_inner_mass}"/>
+      <xacro:box_inertia m="${boom_inner_mass}" x="${boom_inner_length}" y="${boom_inner_width}" z="${boom_inner_depth}"/>
+    </inertial>
+  </link>
+
+  <!-- Grappleslew Joint - Revolute after prismatic -->
+  <joint name="grapple_slew" type="revolute">
+    <parent link="boom_inner"/>
+    <child link="grapple_slew"/>
+    <origin xyz="${boom_inner_length + (grappleslew_radius)} 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14159" upper="3.14159" effort="${grappleslew_effort}" velocity="${grappleslew_velocity}"/>
+  </joint>
+
+  <!-- Grapple Slew Link -->
+  <link name="grapple_slew">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${grappleslew_radius}" length="${grappleslew_length}"/>
+      </geometry>
+      <xacro:material_purple />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${grappleslew_radius}" length="${grappleslew_length}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${grappleslew_mass}"/>
+      <xacro:cylinder_inertia m="${grappleslew_mass}" r="${grappleslew_radius}" h="${grappleslew_length}"/>
+    </inertial>
+  </link>
+
+  <!-- Grapple Roll Joint - Revolute -->
+  <joint name="grapple_roll" type="revolute">
+    <parent link="grapple_slew"/>
+    <child link="grapple_roll"/>
+    <origin xyz="0 0 -${(grappleslew_length/2)+(grappleroll_radius)}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-${grappleroll_range}" upper="${grappleroll_range}" effort="${grappleroll_effort}" velocity="${grappleroll_velocity}"/>
+  </joint>
+
+  <!-- Grapple Roll Link -->
+  <link name="grapple_roll">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+      <geometry>
+        <cylinder radius="${grappleroll_radius}" length="${grappleroll_length}"/>
+      </geometry>
+      <xacro:material_orange />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+      <geometry>
+        <cylinder radius="${grappleroll_radius}" length="${grappleroll_length}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+      <mass value="${grappleroll_mass}"/>
+      <xacro:cylinder_inertia m="${grappleroll_mass}" r="${grappleroll_radius}" h="${grappleroll_length}"/>
+    </inertial>
+  </link>
+
+  <!-- Grapple Pitch Joint - Final Revolute -->
+  <joint name="grapple_pitch" type="revolute">
+    <parent link="grapple_roll"/>
+    <child link="grapple_pitch"/>
+    <origin xyz="${grappleroll_length/2 + 0.365} 0 -0.23" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14159" upper="3.14159" effort="${grapplepitch_effort}" velocity="${grapplepitch_velocity}"/>
+  </joint>
+
+  <!-- Grapple Pitch Link -->
+  <link name="grapple_pitch">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <cylinder radius="${grapplepitch_radius}" length="${grapplepitch_length}"/>
+      </geometry>
+      <xacro:material_white />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+      <geometry>
+        <cylinder radius="${grapplepitch_radius}" length="${grapplepitch_length}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+      <mass value="${grapplepitch_mass}"/>
+      <xacro:cylinder_inertia m="${grapplepitch_mass}" r="${grapplepitch_radius}" h="${grapplepitch_length}"/>
+    </inertial>
+  </link>
+
+  <!-- Grapple Joint -->
+  <joint name="grapple_joint" type="fixed">
+    <parent link="grapple_pitch"/>
+    <child link="grapple"/>
+    <origin xyz="0.425 0 0.23" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Grapple Tool -->
+  <link name="grapple">
+    <visual>
+      <origin xyz="${grapple_length/2} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${grapple_length} ${grapple_width} ${grapple_height}"/>
+      </geometry>
+      <xacro:material_black />
+    </visual>
+    <collision>
+      <origin xyz="${grapple_length/2} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${grapple_length} ${grapple_width} ${grapple_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="${grapple_length/2} 0 0" rpy="0 0 0"/>
+      <mass value="${grapple_mass}"/>
+      <xacro:box_inertia m="${grapple_mass}" x="${grapple_length}" y="${grapple_width}" z="${grapple_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Visual connector properties - calculated from actual joint distances -->
+  <xacro:property name="connector_1_length" value="0.46" />   <!-- Distance from grapple_roll to grapple_pitch -->
+  <xacro:property name="connector_2_length" value="0.46" />  <!-- Distance from grapple_pitch to grapple -->
+  <xacro:property name="connector_width" value="0.05" />
+  <xacro:property name="connector_height" value="0.05" />
+  <xacro:property name="connector_mass" value="0.1" />
+
+  <!-- Connector 1: Grapple Roll to Grapple Pitch -->
+  <joint name="connector_1_joint" type="fixed">
+    <parent link="grapple_roll"/>
+    <child link="connector_1"/>
+    <origin xyz="0.365 0 -0.115" rpy="0 0.5623 0"/>
+  </joint>
+
+  <link name="connector_1">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${connector_1_length} ${connector_width} ${connector_height}"/>
+      </geometry>
+      <xacro:material_gray />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${connector_1_length} ${connector_width} ${connector_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${connector_mass}"/>
+      <xacro:box_inertia m="${connector_mass}" x="${connector_1_length}" y="${connector_width}" z="${connector_height}"/>
+    </inertial>
+  </link>
+
+  <!-- Connector 2: Grapple Pitch to Grapple -->
+  <joint name="connector_2_joint" type="fixed">
+    <parent link="grapple_pitch"/>
+    <child link="connector_2"/>
+    <origin xyz="0.2175 0 0.115" rpy="0 -0.4956 0"/>
+  </joint>
+
+  <link name="connector_2">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${connector_2_length} ${connector_width} ${connector_height}"/>
+      </geometry>
+      <xacro:material_gray />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${connector_2_length} ${connector_width} ${connector_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${connector_mass}"/>
+      <xacro:box_inertia m="${connector_mass}" x="${connector_2_length}" y="${connector_width}" z="${connector_height}"/>
+    </inertial>
+  </link>
+
+  <!-- ros2_control configuration -->
+  <ros2_control name="FakeSystem" type="system">
+    <hardware>
+      <plugin>mock_components/GenericSystem</plugin>
+    </hardware>
+    <joint name="beam_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="turn_table">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="boom_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="boom_inner_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="grapple_slew">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="grapple_roll">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="grapple_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+</robot>
