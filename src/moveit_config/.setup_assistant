@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: ROS2_MRM
+    relative_path: urdf/mill_relining_robot.urdf.xacro
+  srdf:
+    relative_path: config/mill_relining_robot.srdf
+  package_settings:
+    author_name: aarmstrong
+    author_email: aarmstrong@example.com
+    generated_timestamp: 1753756246
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
