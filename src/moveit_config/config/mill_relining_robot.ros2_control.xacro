@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="mill_relining_robot_ros2_control" params="name initial_positions_file">
+        <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+
+        <ros2_control name="${name}" type="system">
+            <hardware>
+                <!-- By default, set up controllers for simulation. This won't work on real hardware -->
+                <plugin>mock_components/GenericSystem</plugin>
+            </hardware>
+            <joint name="beam_joint">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['beam_joint']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="turn_table">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['turn_table']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="boom_pitch">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['boom_pitch']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="boom_inner_joint">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['boom_inner_joint']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="grapple_slew">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['grapple_slew']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="grapple_roll">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['grapple_roll']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="grapple_pitch">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['grapple_pitch']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+
+        </ros2_control>
+    </xacro:macro>
+</robot>
